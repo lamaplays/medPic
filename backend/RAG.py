@@ -1,43 +1,34 @@
-""" 
-this code is supposed to work, but it doesnt bc print(collection.count()) is 0 bc my chroma code is not compatible with llama index. 
-also consider switching to llama workflows since everything is fucking deprecated beside that
-cheers
-
-
-"""
-
-
-
 import chromadb
-from llama_index.core import VectorStoreIndex 
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.core import VectorStoreIndex, Settings
 from llama_index.vector_stores.chroma import ChromaVectorStore
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+chroma_path = "C:\Users\Administrator\Desktop\medpic2_OUT\medpic2\backend\chroma_store"
+collection_name = "drug_info"
+embedding_model_name = "all-MiniLM-L6-v2"
+query_text = "What is the common side effect of aspirin?"
+Settings.embed_model = HuggingFaceEmbedding(model_name=embedding_model_name)
+
+
+
+
 from llama_index.llms.openai import OpenAI
-from llama_index.core import Settings
+Settings.llm = OpenAI(model="gpt-4o-mini")
+
+chroma_client = chromadb.PersistentClient(path=chroma_path)
+chroma_collection = chroma_client.get_collection(name=collection_name)
+print(f"Collection '{collection_name}' has a count of: {chroma_collection.count()}")
+
+vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+query_engine = index.as_query_engine()
 
 
-#sfda_brands = load_sfda()
-
-
-embedding_model = HuggingFaceEmbedding('all-MiniLM-L6-v2')
-client = chromadb.PersistentClient(path="chroma_store")
-collection = client.get_or_create_collection("drug_info")
-print(collection.count())  
-
-   
-# Wrap it with LlamaIndex
-# chroma_store = ChromaVectorStore(chroma_collection=collection)
-# index = VectorStoreIndex.from_vector_store(
-#     vector_store=chroma_store,
-#     embed_model=embedding_model,
-#      )
-
-# Settings.llm = OpenAI(model="gpt-4o-mini")
-
-
-
-# query_engine = index.as_query_engine()
-# response = query_engine.query("what are the side effects of Adol?")
-# print(response)
-
-# # output is "Empty Response"
+print(f"\nExecuting query: '{query_text}'")
+response = query_engine.query(query_text)
+print("\n--- Final Response ---")
+print(response)

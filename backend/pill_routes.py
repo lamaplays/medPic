@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
-from filenamelol import Pill, db
+from medpic2.backend.tables import Pill, db
 from ocr import process_image, query_chromadb
 from werkzeug.utils import secure_filename
 import os
@@ -32,8 +32,8 @@ def upload():
     meds = query_chromadb(text, sfda_brand_set)
 
     return jsonify({
-        "ocr_text": text,              # ✅ key renamed to match frontend
-        "medication_info": meds        # ✅ meds must have correct field names (see ocr.py)
+        "ocr_text": text,             
+        "medication_info": meds        
     })
 
 

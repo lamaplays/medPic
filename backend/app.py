@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_login import LoginManager
 from flask_cors import CORS
-from filenamelol import db, User
+from medpic2.backend.tables import db, User
 from auth_routes import auth
 from pill_routes import pill, set_sfda_brands
 from ocr import load_sfda

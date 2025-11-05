@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user
-from filenamelol import User, db
+from medpic2.backend.tables import User, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint('auth', __name__)
